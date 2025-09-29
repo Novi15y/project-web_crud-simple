@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Data Mahasiswa — CRUD Sederhana</title>
+  <!-- Panggil file CSS eksternal -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- CONTAINER UTAMA -->
+  <div class="container">
+
+    <!-- Judul halaman -->
+    <h1>Data Mahasiswa — CRUD Sederhana</h1>
+
+    <!-- FORM INPUT MAHASISWA  -->
+    <div class="card card-form">
+      <form id="form-mahasiswa" autocomplete="off">
+        <!-- Input Nama -->
+        <div class="form-group">
+          <label for="nama">Nama</label>
+          <input type="text" id="nama" required placeholder="Masukkan Nama">
+        </div>
+
+        <!-- Input NIM -->
+        <div class="form-group">
+          <label for="nim">NIM</label>
+          <input type="text" id="nim" required placeholder="Masukkan NIM">
+        </div>
+
+        <!-- Pilihan Departemen -->
+        <div class="form-group">
+          <label for="departemen">Departemen</label>
+          <select id="departemen" required>
+            <option value="">-- Pilih Departemen --</option>
+            <!-- Daftar opsi departemen -->
+            <option value="Teknik Sipil">Teknik Sipil</option>
+            <option value="Teknik Mesin">Teknik Mesin</option>
+            <option value="Teknik Perkapalan">Teknik Perkapalan</option>
+            <option value="Teknik Elektro">Teknik Elektro</option>
+            <option value="Arsitektur">Arsitektur</option>
+            <option value="Teknik Geologi">Teknik Geologi</option>
+            <option value="Teknik Industri">Teknik Industri</option>
+            <option value="Teknik Kelautan">Teknik Kelautan</option>
+            <option value="Sistem Perkapalan">Sistem Perkapalan</option>
+            <option value="Perencanaan Wilayah dan Kota">Perencanaan Wilayah dan Kota</option>
+            <option value="Teknik Pertambangan">Teknik Pertambangan</option>
+            <option value="Teknik Informatika">Teknik Informatika</option>
+            <option value="Teknik Lingkungan">Teknik Lingkungan</option>
+            <option value="Teknik Metalurgi">Teknik Metalurgi</option>
+            <option value="Teknik Geodesi">Teknik Geodesi</option>
+          </select>
+        </div>
+
+        <!-- Hidden input untuk menyimpan ID ketika edit -->
+        <input type="hidden" id="id">
+
+        <!-- Tombol Reset & Simpan -->
+        <div class="form-actions">
+          <button type="button" id="btn-reset" class="btn btn-danger"> Reset</button>
+          <button type="submit" id="btn-simpan" class="btn btn-success"> Simpan</button>
+        </div>
+      </form>
+    </div>
+    <!-- END FORM INPUT -->
+
+
+    <!-- CARD UTAMA  -->
+    <div class="card card-main">
+      <!-- Judul tabel -->
+      <h2>Daftar Mahasiswa</h2>
+
+      <!-- Toolbar: Search, Filter, Import, Export -->
+      <div class="toolbar">
+        <!-- Bagian kiri: Search + Filter -->
+        <div class="left-tools">
+          <input type="text" id="search" placeholder="🔍 Cari..." />
+          <select id="filter">
+            <option value="all">Semua</option>
+            <option value="nama">Nama</option>
+            <option value="nim">NIM</option>
+            <option value="departemen">Departemen</option>
+          </select>
+        </div>
+
+        <!-- Bagian kanan: Import & Export -->
+        <div class="right-tools">
+          <!-- Pilih file untuk di-import -->
+          <label for="fileUpload" class="file-label">📂 Pilih File</label>
+          <input type="file" id="fileUpload" accept=".csv,.xlsx" />
+          <button type="button" id="btn-import" class="btn btn-success">📥 Import</button>
+
+          <!-- Export: default tombol + pilihan -->
+          <div class="export-wrapper">
+            <button type="button" id="btn-export" class="btn btn-primary">📤 Export</button>
+            <div class="export-options" id="export-options" aria-hidden="true">
+              <button data-type="csv" class="opt">Export → CSV</button>
+              <button data-type="pdf" class="opt">Export → PDF</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END TOOLBAR  -->
+
+
+      <!-- TABEL DATA -->
+      <div class="table-wrap">
+        <table id="table-mahasiswa">
+          <thead>
+            <tr>
+              <th style="width:60px">No</th>
+              <!-- Header sortable: bisa diklik untuk urutkan -->
+              <th class="sortable-header" data-column="nama">Nama <span class="sort-indicator"></span></th>
+              <th class="sortable-header" data-column="nim">NIM <span class="sort-indicator"></span></th>
+              <th class="sortable-header" data-column="departemen">Departemen <span class="sort-indicator"></span></th>
+              <th style="width:150px">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <!-- Isi tabel akan di-generate dari script.js -->
+          </tbody>
+        </table>
+      </div>
+      
+    </div>
+    
+
+  </div> <!-- END CONTAINER -->
+
+
+ 
+  <!-- Untuk baca file Excel (CSV/XLSX) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- Untuk generate PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+ 
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+:root{
+  --bg-start: #f5f5f5;
+  --bg-end: #e0e0e0;
+  --card-bg: #ffffff;
+  --accent: #4CAF50;
+  --accent-dark: #388E3C;
+  --muted: #777;
+}
+
+*{box-sizing:border-box}
+
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
+  color: #222;
+}
+
+/* container tengah */
+.container {
+  width: 92%;
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* judul utama */
+h1{
+  margin: 18px 0;
+  font-size: 28px;
+  letter-spacing: 0.2px;
+  color: #222;
+}
+
+/* ================= CARD ================= */
+/* card dasar untuk form/tabel */
+.card{
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  margin: 18px 0;
+}
+
+/* khusus card kecil form */
+.card-form{ max-width: 420px; margin: 8px auto 22px auto; text-align:left; }
+
+/* card besar yang menampung tabel */
+.card-main{ padding: 18px; }
+
+/* H2 di card-main */
+.card-main h2{ margin: 6px 0 14px 0; color:#333; }
+
+/* ================= FORM ================= */
+.form-group{ margin-bottom: 12px; }
+.form-group label{ display:block; margin-bottom:6px; font-weight:600; color:#333; }
+.form-group input, .form-group select{
+  width:100%;
+  padding:9px 10px;
+  border:1px solid #d2d2d2;
+  border-radius:8px;
+  font-size:14px;
+}
+
+/* tombol form */
+.form-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:6px; }
+.btn{
+  padding:8px 14px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
+}
+.btn-success{ background:var(--accent); color:white; }
+.btn-danger{ background:#e53935; color:white; }
+.btn-primary{ background:#1976d2; color:white; }
+
+/* ================= TABLE ================= */
+.table-wrap{ width:100%; overflow:auto; border-radius:10px; }
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+  min-width:720px;
+}
+thead th{
+  background: linear-gradient(to bottom, var(--accent), var(--accent-dark));
+  color:white;
+  padding:12px 10px;
+  text-align:center;
+  font-weight:700;
+}
+tbody td{
+  padding:12px 10px;
+  border-bottom:1px solid #eee;
+  text-align:center;
+  color:#333;
+}
+tbody tr:hover{ background:#fbfbfb; }
+
+/* aksi tombol di tabel */
+tbody td button{
+  padding:6px 10px; font-size:13px; border-radius:6px; border:none; cursor:pointer;
+}
+tbody td button[data-edit]{ background:#1e88e5; color:white; margin-right:6px; }
+tbody td button[data-del]{ background:#ec407a; color:white; }
+
+/* rounded corners for table container top/bottom */
+table thead th:first-child{ border-top-left-radius:10px; }
+table thead th:last-child{ border-top-right-radius:10px; }
+
+/* ================= TOOLBAR ================= */
+.toolbar{
+  margin-bottom:16px; /* <-- UBAH KE MARGIN-BOTTOM */
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.left-tools, .right-tools{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.left-tools input[type="text"], .left-tools select, .right-tools select{
+  padding:8px 10px; border-radius:8px; border:1px solid #d6d6d6; font-size:14px;
+}
+
+/* file input */
+#fileUpload{ display:none; }
+.file-label{
+  display:inline-block;
+  background:#2196F3; color:white;
+  padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:700;
+}
+
+/* import & export button */
+#btn-import, #btn-export{ padding:8px 12px; border-radius:8px; background:var(--accent); color:white; border:none; cursor:pointer; }
+
+/* ================= EXPORT DROPDOWN ================= */
+.export-wrapper{ position:relative; display:inline-block; }
+.export-options{
+  position:absolute; right:0; top:calc(100% + 8px);
+  background:white; border-radius:8px; box-shadow:0 8px 20px rgba(0,0,0,0.12);
+  border:1px solid #eee; overflow:hidden; display:none; min-width:160px; z-index:30;
+}
+.export-options .opt{
+  display:block; width:100%; text-align:left; padding:10px 12px; border:none; background:white; cursor:pointer; font-weight:600;
+}
+.export-options .opt:hover{ background:#f5f5f5; }
+
+/* ================= RESPONSIVE ================= */
+@media (max-width:800px){
+  .card-form{ max-width:100%; padding:16px; }
+  table{ min-width:640px; } /* allow horizontal scroll */
+}
