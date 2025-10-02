@@ -249,7 +249,7 @@ function mapRowFromObject(obj) {
   return { nama: norm(nama), nim: norm(nim), departemen: norm(departemen) };
 }
 
-// Tombol import
+// Tombol import (dengan cek duplikat berdasarkan NIM, konfirmasi, skip duplikat, dan alert jumlah)
 btnImport.addEventListener("click", () => {
   const file = fileInput.files[0];
   if (!file) return alert("Pilih file terlebih dahulu (CSV atau XLSX).");
@@ -259,12 +259,15 @@ btnImport.addEventListener("click", () => {
 
   reader.onload = (e) => {
     try {
+      // Kumpulkan baris yang di-import (raw tanpa id)
+      const newRaw = [];
+
       if (ext === "csv") {
         // Parsing file CSV
         const txt = e.target.result;
         const lines = txt.split(/\r?\n/).filter(l => l.trim() !== "");
         if (lines.length === 0) return alert("File CSV kosong.");
-        
+
         // Deteksi header
         const header = parseCSVLine(lines[0]).map(h => h.toLowerCase());
         let startIdx = 1;
@@ -274,22 +277,22 @@ btnImport.addEventListener("click", () => {
         // Loop isi baris
         for (let i = startIdx; i < lines.length; i++) {
           const cols = parseCSVLine(lines[i]);
-          let nama="", nim="", departemen="";
+          let nama = "", nim = "", departemen = "";
           if (hasHeader) {
             const idxNama = header.findIndex(h => h.includes("nama"));
-            const idxNim = header.findIndex(h => h.includes("nim") || h.includes("npm"));
+            const idxNim = header.findIndex(h => h.includes("nim") || h.includes("npm") || h.includes("id"));
             const idxDep = header.findIndex(h => h.includes("departemen") || h.includes("jurusan") || h.includes("department"));
-            nama = cols[idxNama] || cols[0] || "";
-            nim = cols[idxNim] || cols[1] || "";
-            departemen = cols[idxDep] || cols[2] || "";
+            nama = (cols[idxNama] || cols[0] || "").toString();
+            nim = (cols[idxNim] || cols[1] || "").toString();
+            departemen = (cols[idxDep] || cols[2] || "").toString();
           } else {
             // fallback urutan standar
-            nama = cols[0] || "";
-            nim = cols[1] || "";
-            departemen = cols[2] || "";
+            nama = (cols[0] || "").toString();
+            nim = (cols[1] || "").toString();
+            departemen = (cols[2] || "").toString();
           }
           if (nama && nim && departemen) {
-            data.push({ id: autoId++, nama: norm(nama), nim: norm(nim), departemen: norm(departemen) });
+            newRaw.push({ nama: norm(nama), nim: norm(nim), departemen: norm(departemen) });
           }
         }
 
@@ -302,7 +305,7 @@ btnImport.addEventListener("click", () => {
         json.forEach(item => {
           const mapped = mapRowFromObject(item);
           if (mapped.nama && mapped.nim && mapped.departemen) {
-            data.push({ id: autoId++, nama: mapped.nama, nim: mapped.nim, departemen: mapped.departemen });
+            newRaw.push({ nama: mapped.nama, nim: mapped.nim, departemen: mapped.departemen });
           }
         });
       } else {
@@ -310,11 +313,57 @@ btnImport.addEventListener("click", () => {
         return;
       }
 
+      if (newRaw.length === 0) {
+        fileInput.value = "";
+        return alert("Tidak ada baris data valid untuk diimport.");
+      }
+
+      // 1) Hapus duplikat internal di file import (berdasarkan NIM, case-insensitive)
+      const seenInFile = new Set();
+      const uniqueFromFile = [];
+      newRaw.forEach(item => {
+        const key = (item.nim || "").toLowerCase();
+        if (!seenInFile.has(key)) {
+          seenInFile.add(key);
+          uniqueFromFile.push(item);
+        }
+      });
+      const internalDupCount = newRaw.length - uniqueFromFile.length;
+
+      // 2) Cek duplikat terhadap data yang sudah ada (localStorage) berdasarkan NIM (case-insensitive)
+      const existingNIMs = new Set(data.map(d => (d.nim || "").toLowerCase()));
+      const toAdd = uniqueFromFile.filter(item => !existingNIMs.has((item.nim || "").toLowerCase()));
+      const duplicateAgainstExistingCount = uniqueFromFile.length - toAdd.length;
+
+      // 3) Jika ada duplikat (internal atau terhadap existing) -> minta konfirmasi
+      if (duplicateAgainstExistingCount > 0 || internalDupCount > 0) {
+        const parts = [];
+        if (duplicateAgainstExistingCount > 0) parts.push(`${duplicateAgainstExistingCount} data memiliki NIM yang sudah ada di database`);
+        if (internalDupCount > 0) parts.push(`${internalDupCount} data duplikat ditemukan di file import`);
+        parts.push(`Akan ditambahkan ${toAdd.length} data unik.`);
+        parts.push("Tekan OK untuk melanjutkan (duplikat akan di-skip), Cancel untuk membatalkan import.");
+        const proceed = confirm(parts.join("\n"));
+        if (!proceed) {
+          alert("Import dibatalkan.");
+          fileInput.value = "";
+          return;
+        }
+      }
+
+      // 4) Tambahkan hanya yang unik (toAdd) dan beri id otomatis
+      let addedCount = 0;
+      toAdd.forEach(item => {
+        data.push({ id: autoId++, nama: item.nama, nim: item.nim, departemen: item.departemen });
+        addedCount++;
+      });
+
       // Simpan & render ulang
       saveData(data);
       render();
       fileInput.value = "";
-      alert("Import selesai.");
+
+      // 5) Tampilkan ringkasan hasil import
+      alert(`Import selesai.\n${addedCount} data berhasil ditambahkan.\n${duplicateAgainstExistingCount} data di-skip (NIM sudah ada).\n${internalDupCount} data di-skip (duplikat di file).`);
     } catch (err) {
       console.error(err);
       alert("Terjadi kesalahan saat import.");
